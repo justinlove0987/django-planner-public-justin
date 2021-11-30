@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+<!-- s -->
+{% load static %}
+<!-- s -->
+{% block title %} Create A Plan! {% endblock title %}
+<!-- s -->
+{% block content %}
+<div class="plan-container shadow-outline">
+  <header>Create A Plan</header>
+  <div class="create-plan-message"></div>
+
+  <div class="create-plan-container">
+    <section class="show-plan__sec shadow-outline">
+      <div class="show-plan-container">
+        <!-- s -->
+        <div class="learning_name__lab">Task Name</div>
+        <div class="tota_unit__lab">Total Unit</div>
+        <div class="total_progress__lab">Current Progress</div>
+        <div class="every_day_to_do_unit__lab">EveryDay To Do Unit</div>
+
+        <div class="sperator"></div>
+        <input class="learning_name__input classic-input" type="text" />
+        <input class="tota_unit__input classic-input" type="number" />
+        <input class="total_progress__input classic-input" type="number" />
+        <input class="every_day_to_do_unit__input classic-input" type="number" />
+      </div>
+      {% comment %} <button class="button-17" type="submit">Show</button> {% endcomment %}
+      <button class="show__btn">Show</button>
+    </section>
+
+    <section class="choose-plan__sec shadow-outline">
+      <div class="backups">
+        <!--
+        <div class="backup">
+          <header>Django</header>
+          <div class="backup-content-container">
+            <i class="bx bx-check checkbox__btn"></i>
+            <div class="sperator"></div>
+            <div class="backup-info-container">
+              <div class="tota_unit__lab">total unit</div>
+              <div class="total_progress__lab">total progress</div>
+              <div class="every_day_to_do_unit__lab">every day unit</div>
+              <div class="category__lab">category</div>
+              <div class="tota_unit__value">10</div>
+              <div class="total_progress__value">1</div>
+              <div class="every_day_to_do_unit__value">2</div>
+              <div class="category__value">Video</div>
+            </div>
+          </div>
+        </div>
+        -->
+      </div>
+      <button class="confirm__btn">Confirm</button>
+    </section>
+  </div>
+</div>
+
+<script>
+  const btnShow = document.querySelector(".show__btn");
+  const btnConfirm = document.querySelector(".confirm__btn");
+  const inputLearningName = document.querySelector(".learning_name__input");
+  const inputTotalUnit = document.querySelector(".tota_unit__input");
+  const inputTotalProgress = document.querySelector(".total_progress__input");
+  const inputEveryDayToDoUnit = document.querySelector(".every_day_to_do_unit__input");
+  const inputCategory = document.querySelector(".category__input");
+  const msgCreatePlan = document.querySelector(".create-plan-message");
+  let btnCheckboxes = document.querySelectorAll(".checkbox__btn");
+  let Containerbackup = document.querySelector(".backups");
+  let backups = document.querySelectorAll(".backup");
+  let learning_name_lst = [];
+
+  const btnCheckboxesEventListener = function () {
+    btnCheckboxes = document.querySelectorAll(".checkbox__btn");
+    backups = document.querySelectorAll(".backup");
+    btnCheckboxes.forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        btnCheckboxes.forEach((innerbtn, i) => {
+          innerbtn.style.background = "#fff";
+          innerbtn.style.color = "black";
+          backups[i].style.background = "#fff";
+        });
+        if (btn.style.background !== "rgb(51, 107, 107)") {
+          btn.style.background = "#336b6b";
+          btn.style.color = "#fff";
+          backups[i].style.background = "#d1ebe8";
+        } else {
+          btn.style.background = "#fff";
+          btn.style.color = "black";
+        }
+      });
+    });
+  };
+
+  function get_learning_name_lst() {
+    sendJson("{% url 'get_learning_name_lst' %}", {}, (data) => {
+      learning_name_lst = data["learning_name_lst"];
+    });
+  }
+
+  function isLowerZero(value) {
+    return value < 0;
+  }
+
+  function isEmptyString(value) {
+    return value === "";
+  }
+
+  function isZero(value) {
+    return value === 0;
+  }
+
+  function isLearningNameExist(value) {
+    console.log(learning_name_lst);
+    return learning_name_lst.includes(value);
+  }
+
+  function showMessage(message) {
+    setTimeout(function () {
+      msgCreatePlan.textContent = message;
+      $(".create-plan-message").fadeIn("slow").css("display", "inline-block");
+    }, 1);
+    setTimeout(function () {
+      $(".create-plan-message").fadeOut("slow");
+    }, 3000);
+  }
+
+  function learningNameInputMassage() {
+    const inputLearningNameValue = inputLearningName.value;
+
+    // input is Empty
+    if (isEmptyString(inputLearningNameValue)) {
+      showMessage("please input a learning name!");
+      return false;
+    } else if (isLearningNameExist(inputLearningNameValue)) {
+      showMessage("We already had the learning name! Change one!");
+      return false;
+    }
+
+    return true;
+  }
+
+  function inputTotalUnitInputMassage() {
+    const inputTotalUnitValue = inputTotalUnit.value;
+    const inputTotalProgressValue = inputTotalProgress.value;
+    const inputEveryDayToDoUnitValue = inputEveryDayToDoUnit.value;
+    const inputTotalUnitNumber = Number(inputTotalUnitValue);
+    const inputTotalProgressNumber = Number(inputTotalProgressValue);
+    const inputEveryDayToDoUnitNumber = Number(inputEveryDayToDoUnitValue);
+
+    if (isZero(inputTotalUnitNumber) || isLowerZero(inputTotalUnitNumber)) {
+      showMessage("total unit must greater than zero!");
+      return false;
+    } else if (inputTotalUnitNumber < inputTotalProgressNumber) {
+      showMessage("total unit must greater or equal total progress!");
+      return false;
+    } else if (inputTotalUnitNumber < inputEveryDayToDoUnitNumber) {
+      showMessage("total unit must greater or equal total every day unit!");
+      return false;
+    }
+    return true;
+  }
+
+  function everydayToDoUnitMassage() {
+    const inputEveryDayToDoUnitValue = inputEveryDayToDoUnit.value;
+    const inputEveryDayToDoUnitNumber = Number(inputEveryDayToDoUnitValue);
+
+    if (isZero(inputEveryDayToDoUnitValue) || isLowerZero(inputEveryDayToDoUnitValue)) {
+      showMessage("every day unit must greater than zero!");
+      return false;
+    }
+
+    return true;
+  }
+
+  function showCreatePlanMessage() {
+    return learningNameInputMassage() && inputTotalUnitInputMassage() && everydayToDoUnitMassage();
+  }
+
+  function createBackup() {
+    const inputLearningNameValue = inputLearningName.value;
+    const inputTotalUnitValue = inputTotalUnit.value;
+    const inputTotalProgressValue = inputTotalProgress.value;
+    const inputEveryDayToDoUnitValue = inputEveryDayToDoUnit.value;
+
+    Containerbackup.style.border = "none";
+
+    const html = `<div class="backup">
+                  <header>${inputLearningNameValue}</header>
+                  <div class="backup-content-container">
+                  <i class="bx bx-check checkbox__btn"></i>
+                  <div class="sperator"></div>
+                  <div class="backup-info-container">
+                    <div class="tota_unit__lab">total unit</div>
+                    <div class="total_progress__lab">total progress</div>
+                    <div class="every_day_to_do_unit__lab">every day unit</div>
+                    <div class="tota_unit__value">${inputTotalUnitValue}</div>
+                    <div class="total_progress__value">${inputTotalProgressValue}</div>
+                    <div class="every_day_to_do_unit__value">${inputEveryDayToDoUnitValue}</div>
+                  </div>
+                </div>
+              </div>`;
+
+    Containerbackup.insertAdjacentHTML("afterbegin", html);
+    btnCheckboxesEventListener();
+  }
+
+  function btnShowClicked() {
+    btnShow.addEventListener("click", () => {
+      if (showCreatePlanMessage() !== true) {
+        return;
+      }
+      createBackup();
+    });
+  }
+
+  function btnConfirmClicked() {
+    btnConfirm.addEventListener("click", () => {
+      backups.forEach((bk, i) => {
+        if (bk.style.background === "rgb(209, 235, 232)") {
+          const learning_name = bk.querySelector("header").textContent;
+          const total_unit = bk.querySelector(".tota_unit__value").textContent;
+          const total_progress = bk.querySelector(".total_progress__value").textContent;
+          const every_day_to_do_unit = bk.querySelector(".every_day_to_do_unit__value").textContent;
+          const url = "{% url 'calculate_complete_date' %}";
+          const body = { learning_name: learning_name, total_unit: total_unit, total_progress: total_progress, every_day_to_do_unit: every_day_to_do_unit };
+
+          if (isLearningNameExist(learning_name)) {
+            showMessage("We already had the learning name! Change one!");
+            return;
+          } else {
+            sendJson(url, body, (data) => {
+              learning_name_lst.push(learning_name);
+              window.location.href = "{% url 'home' %}";
+            });
+          }
+        }
+      });
+    });
+  }
+
+  function init() {
+    btnShowClicked();
+    btnConfirmClicked();
+    get_learning_name_lst();
+  }
+
+  init();
+</script>
+
+{% endblock content %}

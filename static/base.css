@@ -1,0 +1,55 @@
+/* https://coolors.co/e63946-f1faee-a8dadc-457b9d-1d3557 */
+
+body {
+  /* background-color: antiquewhite; */
+}
+
+:root {
+  --main-radius: 5px;
+  --main-padding: 5px;
+}
+
+#sidebar {
+  background-color: #dcf1f1;
+  grid-area: sidebar;
+  border-radius: var(--main-padding);
+  padding-top: var(--main-padding);
+}
+
+main {
+  /* background-color: #f0f5f3; */
+  /* grid-area: main;
+  border-radius: var(--main-padding);
+  padding-top: var(--main-padding); */
+  padding-top: 0;
+  padding-bottom: 5rem;
+}
+
+@media only screen and (max-width: 550px) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.4fr 0.4fr 2.2fr 1.2fr 1.2fr 1.2fr 1fr;
+    grid-template-areas: "nav" "sidebar" "content1" "content2";
+  }
+}
+
+#welcome {
+  background: linear-gradient(to right top, #f1faee, #a8dadc);
+  padding: 6rem 12% 6rem 12%;
+  /* margin: 1rem; */
+}
+
+#welcome h2 {
+  margin: 0;
+  font-size: 3.5rem;
+  color: #1d3557;
+  /* background-color: aqua; */
+}
+
+#welcome p {
+  margin: 0 0 2rem 0;
+  color: #457b9d;
+  font-size: 1.5rem;
+
+  /* background-color: aquamarine; */
+}

@@ -1,0 +1,65 @@
+{% load static %}
+<!--doctype html-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE-edge" />
+    <meta name="viewport" content="width=device-width, intial-scale=1.0" />
+    <title>Personal Website</title>
+
+    <link rel="stylesheet" href="{% static 'portfolio.css' %}" />
+    <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <section id="main">
+      <nav>
+        <!--logo -->
+        <a href="#" class="logo">
+          <!-- <img src="images/logo.png" /> -->
+        </a>
+        <!--menu-btn-->
+        <input class="menu-btn" type="checkbox" id="menu-btn" />
+        <label class="menu-icon" for="menu-btn">
+          <span class="nav-icon"></span>
+        </label>
+        <!--menu-->
+        <ul class="menu">
+          <li><a href="#main">Home</a></li>
+          <!-- <li><a href="#skills">Skills</a></li> -->
+        </ul>
+        <!--say-hey -->
+        <a href="#" class="hey">Say Hi!</a>
+      </nav>
+    </section>
+    <!-- content -->
+    <div class="content">
+      <!--model -->
+      <div class="model">
+        <img src="{% static 'img/model1.png' %}" />
+      </div>
+
+      <!--text -->
+      <div class="main-text">
+        <h1>Hello, I am Justin !</h1>
+        <p>歡迎欣賞我的作品！謝謝！</p>
+        <!--btn -->
+        <div class="portfolio-label">我的專案</div>
+        <a class="portfolio-content" href="http://djangoplanner-env.eba-ty9a6uic.us-west-2.elasticbeanstalk.com/" target="_blank">
+          <div class="portfolio-imgbox"><i class="bx bx-shape-triangle"></i>Planner</div>
+          <div class="portfolio-text"><p></p></div>
+        </a>
+        <div class="portfolio-label">做過的專案</div>
+        <a class="portfolio-content" href="http://djangogreatkart-env-1.eba-d2pnpu9y.us-west-2.elasticbeanstalk.com/" target="_blank">
+          <div class="portfolio-imgbox"><img src="{% static 'img/logo.png' %}" alt="" /></div>
+          <div class="portfolio-text"><p></p></div>
+        </a>
+      </div>
+    </div>
+
+    <!--footer -->
+    <footer>
+      <p></p>
+      <p>Copyright</p>
+    </footer>
+  </body>
+</html>

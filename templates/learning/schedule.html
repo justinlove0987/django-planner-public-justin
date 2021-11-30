@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+<!-- seperate -->
+{% load static %}
+<!-- seperate -->
+{% block content %}
+<div class="schedule-container shadow-outline">
+  <div class="header-contianer">
+    <header>
+      Task Schedule
+      <!--
+      {% for group_id, groups in group_items.items %} {{ group_id }} {% for group_name, learning_name_lst in groups.items %} {{ group_name }} {% for learning_name in learning_name_lst %} {{ learning_name }} {% endfor %} {% endfor %} {% endfor %}
+    --></header>
+    <i class="bx bx-plus schedule__btn--add"></i>
+  </div>
+
+  <div class="sperator"></div>
+
+  <div class="wrapper">
+    <div class="schedule-content owl-carousel">
+      <!-- schedule start-->
+      {% for group_id, groups in group_items.items %}
+      <!-- for loop -->
+      {% for group_name, learning_name_lst in groups.items %}
+      <div class="schedule-card shadow-outline">
+        <div class="header-container">
+          <input type="text" value="{{ group_name}} " />
+          <i class="bx bx-plus task__btn--add"></i>
+        </div>
+
+        <div class="sperator"></div>
+
+        {% for learning_name in learning_name_lst %}
+        <div class="task-container">
+          <div class="task" draggable="true">{{ learning_name }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+      <!-- endfor -->
+      {% endfor %}
+      <!-- schedule end-->
+    </div>
+  </div>
+</div>
+
+<div class="learning-selector-container shadow-outline hidden">
+  <header>Tasks</header>
+  {% if learning_names %}
+  <select class="learning-selector classic-input">
+    <!---->
+    {% for learning_name in learning_names %}
+    <option value="{{ learning_name }}">{{ learning_name }}</option>
+    {% endfor %}
+    <!---->
+  </select>
+  <button class="classic-button">Confirm</button>
+  {% else %}
+  <p>No new task</p>
+  {% endif %}
+</div>
+<div class="overlay hidden"></div>
+
+<script>
+  const btnSchedule = document.querySelector(".schedule__btn--add");
+  const overlay = document.querySelector(".overlay");
+  const learningSelectorContainer = document.querySelector(".learning-selector-container");
+  let btnTasks = document.querySelectorAll(".task__btn--add");
+  //////// drag and drop function
+  let tasks = document.querySelectorAll(".task");
+  let containers = document.querySelectorAll(".task-container");
+
+  function taskStartAndEndDrag() {
+    tasks.forEach((task) => {
+      task.addEventListener("dragstart", () => {
+        task.classList.add("dragging");
+      });
+      task.addEventListener("dragend", () => {
+        task.classList.remove("dragging");
+        set_group();
+      });
+    });
+  }
+
+  function taskDragover() {
+    containers.forEach((container) => {
+      container.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(container, e.clientY);
+        const task = document.querySelector(".dragging");
+        if (afterElement == null) {
+          container.appendChild(task);
+        } else {
+          container.insertBefore(task, afterElement);
+        }
+      });
+    });
+  }
+
+  function getDragAfterElement(container, y) {
+    const dragbleElements = [...container.querySelectorAll(".task:not(.dragging)")];
+    return dragbleElements.reduce(
+      (closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      },
+      { offset: Number.NEGATIVE_INFINITY }
+    ).element;
+  }
+
+  const openSelector = function () {
+    learningSelectorContainer.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+  };
+
+  const closeSelector = function () {
+    learningSelectorContainer.classList.add("hidden");
+    overlay.classList.add("hidden");
+  };
+
+  // set group
+  const set_group = function () {
+    const scheduleCards = document.querySelectorAll(".schedule-card");
+    const group_info = {};
+    let groups = {};
+    let group_items = {};
+
+    scheduleCards.forEach((card, i) => {
+      const tasks = card.querySelectorAll(".task");
+      const group_name = card.querySelector("input").value;
+
+      tasks.forEach((task, j) => {
+        const learning_name = task.textContent;
+        if (i in group_items) {
+          group_items[i][group_name].push(learning_name);
+        } else {
+          group_items[i] = { [`${group_name}`]: [learning_name] };
+        }
+      });
+    });
+    sendJson("{% url 'set_group' %}", { group_items }, (data) => {});
+  };
+
+  function btnScheduleClicked() {
+    btnSchedule.addEventListener("click", () => {
+      const html = `
+      <div class="schedule-card shadow-outline">
+        <div class="header-container">
+          <input type="text" value="Group Name" />
+          <i class="bx bx-plus task__btn--add"></i>
+        </div>
+
+        <div class="sperator"></div>
+        <div class="task-container">
+        </div>
+      </div>`;
+
+      $(".owl-carousel").trigger("add.owl.carousel", [html, 0]);
+      $(".owl-carousel").owlCarousel("update");
+      $(".owl-carousel").trigger("refresh.owl.carousel");
+
+      containers = document.querySelectorAll(".task-container");
+      tasks = document.querySelectorAll(".task");
+      btnTasks = document.querySelectorAll(".task__btn--add");
+
+      taskStartAndEndDrag();
+      taskDragover();
+      btnTaskClicked();
+      cardInputOnchange();
+    });
+  }
+
+  function btnTaskClicked() {
+    btnTasks.forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        const learningSelector = document.querySelector(".learning-selector");
+        const btnLearningSelector = learningSelectorContainer.querySelector("button");
+        openSelector();
+        btnLearningSelector.addEventListener("click", () => {
+          const learningSelectorValue = learningSelector.value;
+          // create new task
+          const html = `<div class="task" draggable="true">${learningSelectorValue}</div>`;
+          const scheduleCard = btn.closest(".schedule-card");
+          const taskContainer = scheduleCard.querySelector(".task-container");
+
+          taskContainer.insertAdjacentHTML("afterbegin", html);
+          closeSelector();
+          // set up group_name and group_order
+          set_group();
+          // reset drag and drop
+          tasks = document.querySelectorAll(".task");
+          taskStartAndEndDrag();
+          taskDragover();
+        });
+      });
+    });
+  }
+
+  function cardInputOnchange() {
+    const scheduleCard = document.querySelectorAll(".schedule-card");
+    scheduleCard.forEach((card, i) => {
+      const inputScheduleCard = card.querySelector("input");
+
+      inputScheduleCard.addEventListener("input", () => {
+        const group_order = i;
+        const group_name = inputScheduleCard.value;
+        sendJson("{% url 'onchange_group_name' %}", { group_order: group_order, group_name: group_name }, () => {});
+      });
+    });
+  }
+
+  function init() {
+    taskStartAndEndDrag();
+    taskDragover();
+    btnTaskClicked();
+    btnScheduleClicked();
+    cardInputOnchange();
+    overlay.addEventListener("click", closeSelector);
+  }
+
+  init();
+</script>
+
+{% endblock content %}
+<!-- seperate -->

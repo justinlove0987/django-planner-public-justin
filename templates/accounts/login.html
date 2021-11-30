@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+<!-- s -->
+{% load static %}
+<!-- card start-->
+
+{% block content %}
+<!-- s -->
+{% if request.GET.command == "verification" %}
+<div class="verification-container shadow-outline">
+  Thank you for registering with us. We have sent you a verification email to your email address [{{ request.GET.email }}]. Please verify it.
+  <br /><br />
+  Already verified? <a href="{% url 'login' %}">Login</a>
+</div>
+{% else %}
+<div class="login-container shadow-outline">
+  <header>LOGIN</header>
+  <div class="seperator"></div>
+  <form action="{% url 'login' %}" method="POST">
+    {% csrf_token %}
+    <input type="email" class="email classic-input" placeholder="Email" name="email" />
+    <input type="password" class="password classic-input" placeholder="Password" name="password" />
+    <button type="submit" class="btn">Login</button>
+  </form>
+</div>
+{% endif %}
+<!-- s -->
+{% endblock content %}

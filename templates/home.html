@@ -1,0 +1,469 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<div class="">
+  <!-- Daily Learning Start -->
+  {% if learning_items %}
+  <section id="day-learning" class="shadow-outline">
+    <header>Today Tasks</header>
+
+    <div class="search-field-container">
+      <div id="date-search-field">
+        <div class="date-search-field-lab">Date</div>
+        <input type="date" class="classic-input date__input" name="start-date" value="{{ today_date }}" />
+      </div>
+      <!-- status field -->
+      <!--
+      <div id="status-search-field">
+        <div class="status-search-field-lab">Status</div>
+        <select id="status-search-field-input" class="classic-input">
+          <option value="all">All</option>
+          <option value="complete">complete</option>
+          <option value="uncomplete">uncomplete</option>
+          </select>
+      </div>
+      -->
+    </div>
+
+    <div class="seperate-line"><hr /></div>
+    <!--  <h4 class="no-learning-message hidden">We don't have any Learning!</h4> -->
+
+    <div class="wrapper">
+      <div class="carousel owl-carousel">
+        {% if today_learning_detail_items %}
+        <!-- s -->
+        {% for today_learning_detail in today_learning_detail_items %}
+
+        <!-- card start -->
+        <div id="{{ today_learning_detail.id }}" class="card shadow-outline">
+          <!-- header -->
+          <header>{{ today_learning_detail.learning.learning_name }}</header>
+
+          <!-- progressbar start-->
+          <div class="skill">
+            <div class="outer">
+              <div class="inner">
+                <div class="number" value="{{ today_learning_detail.get_day_percentage }}">0%</div>
+              </div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="160px" height="160px">
+              <defs>
+                <linearGradient id="GradientColor">
+                  <stop offset="0%" stop-color="#83c5be" />
+                  <stop offset="100%" stop-color="#2a9d8f" />
+                </linearGradient>
+              </defs>
+              <circle class="circle" cx="80" cy="80" r="70" stroke-linecap="round" />
+            </svg>
+          </div>
+          <!-- progressbar end-->
+          <!-- progress calculator container start -->
+          <div class="progress-calculator-container">
+            <div class="num">
+              <div class="progress-num">{{ today_learning_detail.day_progress }}</div>
+              <div class="skewbox-1">
+                <div class="content"></div>
+                <div class="angle"></div>
+              </div>
+              <div class="skewbox-2">
+                <div class="content"></div>
+                <div class="angle"></div>
+              </div>
+              <div class="total-num">{{ today_learning_detail.day_unit }}</div>
+            </div>
+            <div class="btn progressbar__btn">
+              <i class="bx bxs-chevron-up progressbar__btn--add"></i>
+              <i class="bx bxs-chevron-down progressbar__btn--subtract"></i>
+              <i class="bx bx-check progressbar__btn--done"></i>
+            </div>
+          </div>
+        </div>
+        <!-- card end-->
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </section>
+  <!-- Daily Learning End-->
+
+  <!-- Total Learning End-->
+  <section id="total-learning" class="shadow-outline">
+    <header id="total-learning-header">Total Tasks</header>
+    <div class="total-learning__content">
+      <table class="total-learning__table zui-table">
+        <thead>
+          <tr>
+            <th>目標</th>
+            <th>總量</th>
+            <th>進度</th>
+            <th>剩餘量</th>
+            <th>達成率</th>
+            <th>預計達成日</th>
+            <th>DETAIL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for learning_item in learning_items %}
+          <tr>
+            <td>{{ learning_item.learning_name }}</td>
+            <td>{{ learning_item.total_unit }}</td>
+            <td>{{ learning_item.get_total_progress }}</td>
+            <td>{{ learning_item.get_remaining_unit }}</td>
+            <td>{{ learning_item.get_progress_percentage }}%</td>
+
+            <td>{{ learning_item.completed_date|date:"Y-m-d" }}</td>
+            <td>
+              <a href="{% url 'learning_detail' learning_item.id %}" type="button"><button class="classic-button">Detail</button></a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <!-- Total Learning End-->
+
+  {% else %}
+  <div class="no-learning-container shadow-outline">
+    <h2>We don't have any tasks right now!</h2>
+    <a href="{% url 'create_plan' %}" class="button-17" role="button">Create One</a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  const inputDate = document.querySelector(".date__input");
+  const carousel = document.querySelector(".carousel");
+  let card = document.querySelectorAll(".card");
+  let progressbarNums = document.querySelectorAll(".number");
+
+  let totalNums = document.querySelectorAll(".total-num");
+  let btn = document.querySelectorAll(".progressbar__btn");
+  let btnUp = document.querySelectorAll(".progressbar__btn--add");
+  let btnDown = document.querySelectorAll(".progressbar__btn--subtract");
+  let btnDone = document.querySelectorAll(".progressbar__btn--done");
+  let progressNums = document.querySelectorAll(".progress-num");
+  let circles = document.querySelectorAll(".circle");
+
+  // Card Slider
+  function setCardSlider() {
+    $(".carousel").owlCarousel({
+      margin: 25,
+      animateIn: "flipInX",
+      transitionStyle: "fade",
+
+      nav: true,
+      navText: ["<i class='fas fa-chevron-left'></i>", "<i class='fas fa-chevron-right'></i>"],
+      responsive: {
+        0: {
+          items: 1,
+        },
+        600: {
+          items: 2,
+        },
+        1000: {
+          items: 3,
+        },
+      },
+    });
+  }
+
+  //////// Progress Bar
+
+  function progressbarAnimation() {
+    progressbarNums.forEach((number, i) => {
+      let counter = 0;
+      let percentage = Number(number.getAttribute("value"));
+      let transform_percentage = 472 - 472 * (percentage / 100) + 15;
+      circles = document.querySelectorAll(".circle");
+      circles[i].style.animation = `anim${i} 2.1s linear forwards`;
+      let cssAnimation = document.createElement("style");
+      // cssAnimation.type = "text/css";
+      let rules = document.createTextNode(`@keyframes anim${i} {
+    100% {
+      stroke-dashoffset: ${transform_percentage};
+    }
+  }`);
+
+      cssAnimation.appendChild(rules);
+      circles[i].appendChild(cssAnimation);
+
+      setInterval(() => {
+        if (counter === percentage) {
+          clearInterval();
+        } else {
+          counter += 1;
+          number.innerHTML = counter + "%";
+        }
+      }, 25);
+    });
+  }
+
+  function inputDateChanged() {
+    inputDate.addEventListener("input", () => {
+      const body = { inputDate: inputDate.value };
+      card = document.querySelectorAll(".card");
+      card.forEach((card, i) => {
+        $(".carousel").trigger("remove.owl.carousel", [i]);
+      });
+      $(".carousel").trigger("refresh.owl.carousel");
+      sendJson("{% url 'search_learning_detail' %}", body, (data) => {
+        const learningData = data["learning_data"];
+
+        learningData.forEach((learning) => {
+          const learning_name = learning["learning_name"];
+          const learning_detail_day_percentage = learning["learning_detail_day_percentage"];
+          const learning_detail_day_progress = learning["learning_detail_day_progress"];
+          const learning_detail_day_unit = learning["learning_detail_day_unit"];
+          const learning_detail_id = learning["learning_detail_id"];
+
+          const html = `
+          <!-- card start -->
+            <div id=${learning_detail_id} class="card shadow-outline">
+              <!-- header -->
+              <header>${learning_name}</header>
+  
+              <!-- progressbar start-->
+              <div class="skill">
+                <div class="outer">
+                  <div class="inner">
+                    <div class="number" value="${learning_detail_day_percentage}">${learning_detail_day_percentage}%</div>
+                  </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="160px" height="160px">
+                  <defs>
+                    <linearGradient id="GradientColor">
+                      <stop offset="0%" stop-color="#83c5be" />
+                      <stop offset="100%" stop-color="#2a9d8f" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="circle" cx="80" cy="80" r="70" stroke-linecap="round" />
+                </svg>
+              </div>
+              <!-- progressbar end-->
+              <!-- progress calculator container start -->
+              <div class="progress-calculator-container">
+                <div class="num">
+                  <div class="progress-num">${learning_detail_day_progress}</div>
+                  <div class="skewbox-1">
+                    <div class="content"></div>
+                    <div class="angle"></div>
+                  </div>
+                  <div class="skewbox-2">
+                    <div class="content"></div>
+                    <div class="angle"></div>
+                  </div>
+                  <div class="total-num">${learning_detail_day_unit}</div>
+                </div>
+                <div class="btn progressbar__btn">
+                  <i class="bx bxs-chevron-up progressbar__btn--add"></i>
+                  <i class="bx bxs-chevron-down progressbar__btn--subtract"></i>
+                  <i class="bx bx-check progressbar__btn--done"></i>
+                </div>
+              </div>
+            </div>
+            <!-- card end-->`;
+          $(".carousel").trigger("add.owl.carousel", [html]);
+
+          $(".carousel").trigger("refresh.owl.carousel");
+        });
+        btnReset();
+        progressbarAnimation();
+      });
+    });
+  }
+
+  function btnSetup() {
+    btnUp.forEach((btn, i) => {
+      const progressNum = progressNums[i].textContent;
+      const totalNum = totalNums[i].textContent;
+
+      if (progressNums[i].textContent === totalNums[i].textContent) {
+        btnUp[i].style.pointerEvents = "none";
+        btnUp[i].style.border = "none";
+        btnUp[i].style.color = "gainsboro";
+        btnDone[i].style.pointerEvents = "none";
+        btnDone[i].style.background = "#5dd1c5";
+      }
+
+      if (Number(progressNum) === 0) {
+        btnDown[i].style.pointerEvents = "none";
+        btnDown[i].style.border = "none";
+        btnDown[i].style.color = "gainsboro";
+      }
+    });
+  }
+
+  function btnUpClicked() {
+    btnUp.forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        const learning_detail_id = card[i].id;
+        let current_day_progress = Number(progressNums[i].textContent) + 1;
+        const progressbar_percentage_text = Number(progressbarNums[i].getAttribute("value"));
+        let counter = Number(progressbar_percentage_text);
+
+        progressNums[i].textContent = current_day_progress;
+
+        body = {
+          learning_detail_id: learning_detail_id,
+          current_day_progress: current_day_progress,
+        };
+
+        sendJson("{% url 'change_unit' %}", body, (data) => {
+          const target_number = Number(data["day_percentage"]);
+          let transform_percentage = 472 - 472 * (target_number / 100) + 15;
+
+          progressbarNums[i].setAttribute("value", target_number);
+          circles[i].firstChild.innerHTML = `@keyframes anim${i} {
+        100% {
+          stroke-dashoffset: ${transform_percentage};
+          }
+        }`;
+
+          setInterval(() => {
+            if (counter === target_number) {
+              clearInterval();
+            } else {
+              counter += 1;
+              progressbarNums[i].innerHTML = counter + "%";
+            }
+          }, 30);
+        });
+        // set pointer events
+        btnDown[i].style.pointerEvents = "auto";
+        btnDown[i].style.border = "1px solid #444";
+        btnDown[i].style.color = "black";
+        if (progressNums[i].textContent === totalNums[i].textContent) {
+          btn.style.pointerEvents = "none";
+          btn.style.border = "none";
+          btn.style.color = "gainsboro";
+          btnDone[i].style.pointerEvents = "none";
+          btnDone[i].style.background = "#5dd1c5";
+        }
+      });
+    });
+  }
+
+  // subtract one unit
+  function btnDownClicked() {
+    btnDown.forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        const learning_detail_id = card[i].id;
+        const progressbar_percentage_text = Number(progressbarNums[i].getAttribute("value"));
+        let current_day_progress = Number(progressNums[i].textContent) - 1;
+        progressNums[i].textContent = current_day_progress;
+
+        body = {
+          current_day_progress: current_day_progress,
+          learning_detail_id: learning_detail_id,
+        };
+
+        let counter = Number(progressbar_percentage_text);
+
+        sendJson("{% url 'change_unit' %}", body, (data) => {
+          const target_number = Number(data["day_percentage"]);
+          let transform_percentage = 472 - 472 * (target_number / 100) + 15;
+          progressbarNums[i].setAttribute("value", target_number);
+
+          circles[i].firstChild.innerHTML += `@keyframes anim${i} {
+        100% {
+          stroke-dashoffset: ${transform_percentage};
+          }
+        }`;
+
+          /////
+          setInterval(() => {
+            if (counter === target_number) {
+              clearInterval();
+            } else {
+              counter -= 1;
+              progressbarNums[i].innerHTML = counter + "%";
+            }
+          }, 30);
+        });
+        // set pointer events
+        btnUp[i].style.pointerEvents = "auto";
+        btnUp[i].style.border = "1px solid #444";
+        btnUp[i].style.color = "black";
+        btnDone[i].style.background = "#fff";
+        btnDone[i].style.pointerEvents = "auto";
+        if (Number(progressNums[i].textContent) === 0) {
+          btn.style.pointerEvents = "none";
+          btn.style.border = "none";
+          btn.style.color = "gainsboro";
+        }
+      });
+    });
+  }
+
+  // done unit
+  function bntDoneClicked() {
+    btnDone.forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        const learning_detail_id = card[i].id;
+        const progressbar_percentage_text = Number(progressbarNums[i].getAttribute("value"));
+        let total_num = totalNums[i].textContent;
+        let counter = Number(progressbar_percentage_text);
+
+        progressNums[i].textContent = total_num;
+        body = {
+          learning_detail_id: learning_detail_id,
+          current_day_progress: total_num,
+        };
+
+        circles[i].firstChild.innerHTML += `@keyframes anim${i} {
+        100% {
+          stroke-dashoffset: 15;
+          }
+        }`;
+
+        sendJson("{% url 'change_unit' %}", body, (data) => {
+          progressbarNums[i].setAttribute("value", "100");
+
+          setInterval(() => {
+            if (counter === 100) {
+              clearInterval();
+            } else {
+              counter += 1;
+              progressbarNums[i].innerHTML = counter + "%";
+            }
+          }, 30);
+        });
+        // set pointer events
+        btn.style.pointerEvents = "none";
+        btn.style.background = "#5dd1c5";
+        btnUp[i].style.pointerEvents = "none";
+        btnUp[i].style.border = "none";
+        btnUp[i].style.color = "gainsboro";
+        btnDown[i].style.pointerEvents = "auto";
+        btnDown[i].style.border = "1px solid #444";
+        btnDown[i].style.color = "black";
+      });
+    });
+  }
+
+  function btnReset() {
+    card = document.querySelectorAll(".card");
+    progressbarNums = document.querySelectorAll(".number");
+    progressNums = document.querySelectorAll(".progress-num");
+    totalNums = document.querySelectorAll(".total-num");
+    btn = document.querySelectorAll(".progressbar__btn");
+    btnUp = document.querySelectorAll(".progressbar__btn--add");
+    btnDown = document.querySelectorAll(".progressbar__btn--subtract");
+    btnDone = document.querySelectorAll(".progressbar__btn--done");
+    btnSetup();
+    btnUpClicked();
+    btnDownClicked();
+    bntDoneClicked();
+  }
+
+  function init() {
+    setCardSlider();
+    progressbarAnimation();
+    inputDateChanged();
+    btnReset();
+  }
+
+  init();
+</script>
+
+{% endblock content %}

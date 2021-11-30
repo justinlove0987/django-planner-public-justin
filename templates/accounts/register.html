@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<div class="register-container shadow-outline">
+  <header>REGISTER</header>
+  <div class="seperator"></div>
+  <!-- s -->
+
+  <form action="{% url 'register' %}" method="POST">
+    {% csrf_token %}
+    <!-- s -->
+    {{ form.email }}
+    <!-- s -->
+    {{ form.password }}
+
+    <button type="submit" class="btn">Register</button>
+    {% include "includes/alerts.html" %}
+  </form>
+</div>
+
+{% endblock content %}

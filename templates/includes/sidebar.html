@@ -1,0 +1,62 @@
+{% load static %}
+<div class="sidebar">
+  <div class="logo-details">
+    <a href="{% url 'home' %}"><i class="bx bx-shape-triangle"></i></a>
+    <span class="logo_name">Planner</span>
+  </div>
+  <ul class="nav-links">
+    <li>
+      <a href="{% url 'introduction' %}" target="_blank">
+        <i class="bx bx-file"></i>
+        <span class="link_name">Introduction</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name" target="_blank">Introduction</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="{% url 'create_plan' %}">
+        <i class="bx bx-plus"></i>
+        <span class="link_name">Planner</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name">Planner</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <a href="{% url 'schedule' %}">
+        <i class="bx bx-task"></i>
+        <span class="link_name">Schedule</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name">Schedule</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="{% url 'analytics' %}">
+        <i class="bx bx-line-chart"></i>
+        <span class="link_name">Analytics</span>
+      </a>
+      <ul class="sub-menu blank">
+        <li><a class="link_name" href="{% url 'analytics' %}">Analytics</a></li>
+      </ul>
+    </li>
+
+    <!-- profile details 
+    <li>
+      <div class="profile-details">
+        <div class="profile-content">
+          <img src="{% static 'images/userProfile/fake-user.jpeg' %}" alt="profile" />
+        </div>
+
+        <div class="name-job">
+          <div class="profile_name">Justin Joseph</div>
+          <div class="job">Web Desiner</div>
+        </div>
+        <i class="bx bx-log-out"></i>
+      </div>
+    </li>
+    -->
+  </ul>
+</div>

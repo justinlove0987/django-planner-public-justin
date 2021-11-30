@@ -1,0 +1,85 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<div class="learning-detail-container shadow-outline">
+  <header>{{ learning_detail_items.0.learning.learning_name }}</header>
+  <div class="learning-detail__content">
+    <table class="zui-table learning-detail__table">
+      <thead>
+        <tr>
+          <th>預計完成日期</th>
+          <th>執行量</th>
+          <th>剩餘量</th>
+          <th>是否完成</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for learning_detail in learning_detail_items %}
+        <tr class="{{ learning_detail.id }} learning-detail__table-body-row">
+          <td>{{ learning_detail.expired_datetime|date:"Y-m-d" }}</td>
+          <td class="day_progress__row">{{ learning_detail.day_progress }}</td>
+          <td class="remaining_unit_row">{{ learning_detail.get_remaining_unit }}</td>
+          <td>
+            <button class="learning-detail__btn--execute classic-button" type="submit">執行</button>
+            <!-- <div class="learning-detail__btn--complete hidden">完成</div> -->
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!--
+  <section class="margin-left-3rem">
+    <h2>{{ learning_detail_items.0.learning.learning_name }}</h2>
+    <div class="form-control">
+      <form action="#" method="POST">
+        {% csrf_token %}
+        <label for="start-date">Original Date</label>
+        <input type="date" id="start" name="trip-start" value="2021-10-27" min="2021-10-27" onchange="show_unit(event)" />
+        {% comment %} {{ learning_detail_item_with_onchage_datetime }} {% endcomment %}
+        <label for="start-unit">Original Date</label>
+        <input id="show-date" type="number" id="start-unit" name="start-unit" value="" />
+      </form>
+    </div>
+  </section>
+  -->
+</div>
+
+<script>
+  const talbelLearningDetail = document.querySelector(".learning-detail__table");
+  const tableRowLearningDetail = talbelLearningDetail.querySelectorAll(".learning-detail__table-body-row");
+  const btnLearningDetail = document.querySelectorAll(".learning-detail__btn--execute");
+  const rowDayProgress = document.querySelectorAll(".day_progress__row");
+  let rowRemainingUnit = document.querySelectorAll(".remaining_unit_row");
+
+  function executeBtnClicked() {
+    btnLearningDetail.forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        const learningDetailId = tableRowLearningDetail[i].classList[0];
+        sendJson("{% url 'execute_detail_learning' %}", { learningDetailID: learningDetailId }, (data) => {
+          const dayProgress = data["day_progress"];
+          const remainingUnit = data["remaining_unit"];
+          rowDayProgress[i].textContent = dayProgress;
+          rowRemainingUnit[i].textContent = remainingUnit;
+          checkRowRemainingUnit();
+        });
+      });
+    });
+  }
+
+  function checkRowRemainingUnit() {
+    rowRemainingUnit.forEach((row, i) => {
+      if (row.textContent === "0") {
+        btnLearningDetail[i].textContent = "完成";
+        btnLearningDetail[i].style.boxShadow = "none";
+        btnLearningDetail[i].style.pointerEvents = "none";
+        btnLearningDetail[i].style.background = "#a2dad4";
+      }
+    });
+  }
+
+  executeBtnClicked();
+  checkRowRemainingUnit();
+</script>
+
+{% endblock content %}

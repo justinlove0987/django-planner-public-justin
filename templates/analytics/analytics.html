@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+<!-- s -->
+{% load static %}
+<!-- s -->
+{% block content %}
+
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+
+<div class="analytics-container shadow-outline">
+  <header>Analytics</header>
+
+  <div class="analytics_search_field_container">
+    <div class="learning">
+      <div class="learning__lab">Tasks</div>
+      <select class="learning-options classic-input">
+        {% for learning in learnings %}
+        <option value="{{ learning.learning_name }}">{{ learning.learning_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="period">
+      <div class="period__lab">Period</div>
+      <select class="period__options classic-input">
+        <option value="week">Week</option>
+      </select>
+    </div>
+  </div>
+  <div class="seperator"></div>
+  <div class="date-container">
+    <div class="left__btn">
+      <i class="bx bxs-chevron-left"></i>
+    </div>
+    <div class="left__date">2021/11/11</div>
+    <div class="middle-hyphon"></div>
+    <div class="right__date">2021/11/12</div>
+
+    <div class="right__btn">
+      <i class="bx bxs-chevron-right"></i>
+    </div>
+  </div>
+
+  <div id="chart"></div>
+</div>
+
+<script>
+  const dateContainer = document.querySelector(".date-container");
+  const btnRight = dateContainer.querySelector(".right__btn");
+  const btnLeft = dateContainer.querySelector(".left__btn");
+  const learningSelector = document.querySelector(".learning-options");
+  let dateRight = dateContainer.querySelector(".right__date");
+  let dateLeft = dateContainer.querySelector(".left__date");
+
+  function format_date(date) {
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    let format_date = `${year}/${month}/${day}`;
+    return format_date;
+  }
+
+  function getLeftAndRightDate() {
+    let curr = new Date(); // get current date
+    let first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+    let last = first + 6; // last day is the first day + 6
+    let firstday = new Date(curr.setDate(first));
+    let lastday = new Date(curr.setDate(last));
+
+    const format_firstday = format_date(firstday);
+    const format_lastday = format_date(lastday);
+
+    dateLeft.textContent = format_firstday;
+    dateRight.textContent = format_lastday;
+
+    displayChart(learningSelector.value, dateLeft.textContent, dateRight.textContent);
+  }
+
+  function btnClicked(btn) {
+    btn.addEventListener("click", () => {
+      dateRight = dateContainer.querySelector(".right__date");
+      dateLeft = dateContainer.querySelector(".left__date");
+      let rihgtDate = new Date(dateRight.textContent);
+      let leftDate = new Date(dateLeft.textContent);
+      if (btn === btnRight) {
+        leftDate.setDate(leftDate.getDate() + 7);
+        rihgtDate.setDate(rihgtDate.getDate() + 7);
+      } else {
+        leftDate.setDate(leftDate.getDate() - 7);
+        rihgtDate.setDate(rihgtDate.getDate() - 7);
+      }
+      const format_leftDate = format_date(leftDate);
+      const format_rightDate = format_date(rihgtDate);
+
+      dateLeft.textContent = format_leftDate;
+      dateRight.textContent = format_rightDate;
+
+      const learning_name = learningSelector.value;
+
+      displayChart(learning_name, dateLeft.textContent, dateRight.textContent);
+    });
+  }
+
+  function selectTask() {
+    learningSelector.addEventListener("change", (e) => {
+      learning_name = e.target.value;
+      dateRight = dateContainer.querySelector(".right__date");
+      dateLeft = dateContainer.querySelector(".left__date");
+
+      displayChart(learning_name, dateLeft.textContent, dateRight.textContent);
+    });
+  }
+  selectTask();
+
+  function displayChart(learning_name, leftDate, rightDate) {
+    sendJson("{% url 'update_chart' %}", { learning_name: learning_name, leftDate: leftDate, rightDate: rightDate }, (data) => {
+      scaleXValue = [];
+      seriesValue = [];
+
+      for (let [date, progress] of Object.entries(data["date_progresses"])) {
+        scaleXValue.push(date);
+        seriesValue.push(progress);
+      }
+
+      scaleXValue = scaleXValue.map((value, i) => {
+        const split_value = value.split("/");
+        return split_value[1] + "/" + split_value[2];
+      });
+
+      let chartData = {
+        type: "bar",
+        scale: { "size-factor": 0.1 },
+        "scale-x": {
+          values: scaleXValue,
+        },
+        series: [{ values: seriesValue, "background-color": "#a2dad4" }],
+      };
+
+      zingchart.render({
+        id: "chart",
+        data: chartData,
+        height: 300,
+        width: "90%",
+      });
+    });
+  }
+
+  getLeftAndRightDate();
+  btnClicked(btnRight);
+  btnClicked(btnLeft);
+</script>
+
+{% endblock content %}

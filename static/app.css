@@ -1,0 +1,71 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Open+Sans:wght@400;700&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: "Open Sans", "Lato", sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.display-block {
+  display: block;
+}
+
+.shadow-outline {
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  margin-top: 2rem;
+}
+
+.classic-input {
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #999;
+  transition: all 0.3s;
+  padding: 0.3rem 0.3rem;
+}
+
+.classic-input:focus {
+  outline: none;
+  border: 1px solid #004d40;
+  background: #c5eeea;
+}
+
+.classic-input::placeholder {
+  color: #bbb;
+}
+
+.classic-button {
+  height: 40px;
+  width: 70px;
+  padding: 5px;
+  border: 1px solid rgb(180, 180, 180);
+  border-radius: 7px;
+  background-color: #fff;
+  box-shadow: 0 1px 7px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.choose-classic-button:hover {
+  background-color: #a2dad4;
+  border: 1px solid #227c73;
+}
+
+.classic-button:active {
+  background-color: #227c73;
+  color: #fff;
+}

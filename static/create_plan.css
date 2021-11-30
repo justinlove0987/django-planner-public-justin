@@ -1,0 +1,203 @@
+.plan-container {
+  margin: 20px auto 0 auto;
+  width: 1000px;
+  height: 600px;
+  border: none;
+  box-shadow: none;
+}
+
+.plan-container header {
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.create-plan-message {
+  display: none;
+  border-radius: 7px;
+  border: 1px solid rgb(180, 180, 180);
+  text-align: center;
+  background-color: #eecaca;
+  height: 40px;
+  line-height: 40px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 3rem;
+}
+
+.create-plan-message:hover {
+  background-color: #f1d6d6;
+}
+
+.plan-container .show-plan__sec {
+  width: 400px;
+  height: 450px;
+}
+
+.create-plan-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.show-plan-container {
+  display: grid;
+  grid-template-columns: 3fr 20px 3fr;
+  grid-template-rows: repeat(6, 1fr);
+  row-gap: 15px;
+  font-size: 0.9rem;
+  align-items: center;
+}
+
+.show-plan-container .learning_name__lab {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+.show-plan-container .tota_unit__lab {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.show-plan-container .total_progress__lab {
+  grid-column: 1 / 2;
+  grid-row: 3 / 4;
+}
+
+.show-plan-container .every_day_to_do_unit__lab {
+  grid-column: 1 / 2;
+  grid-row: 4 / 5;
+}
+
+.show-plan-container .sperator {
+  grid-column: 2 / 3;
+  grid-row: 1 / -1;
+}
+
+.show-plan__sec button {
+  display: block;
+  height: 40px;
+  width: 70px;
+  margin: 92px auto 0 auto;
+  padding: 5px;
+  border: 1px solid #444;
+  border-radius: 7px;
+  background-color: #fff;
+  box-shadow: 0 1px 7px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+.show-plan__sec button:hover {
+  background-color: #a2dad4;
+  border: 1px solid #227c73;
+}
+
+.show-plan__sec button:active {
+  background-color: #227c73;
+  color: #fff;
+}
+
+.choose-plan__sec {
+  width: 400px;
+  height: 450px;
+}
+
+.backups {
+  width: 300px;
+  height: 330px;
+  overflow: scroll;
+  margin-top: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid rgb(180, 180, 180);
+  border-radius: 7px;
+  /* transition: all 0.9s ease; */
+}
+
+.backup {
+  width: 300px;
+  min-height: 150px;
+  border: 1px solid #444;
+  border-radius: 7px;
+  margin: 0 auto 20px auto;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.backup:hover {
+  box-shadow: 3px 3px 3px #336b6b;
+}
+
+.backup header {
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.backup-content-container {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  justify-content: space-evenly;
+}
+
+.backup-content-container .checkbox__btn {
+  margin-right: 20px;
+  border: 1px solid #444;
+  border-radius: 100%;
+  height: 20px;
+  width: 20px;
+  text-align: center;
+  transition: all 0.2s ease;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.backup-content-container .checkbox__btn:hover {
+  background: #a2dad4;
+}
+
+.backup-content-container .checkbox__btn:active {
+  background: #336b6b;
+  color: #fff;
+}
+.backup-info-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(4, 1fr);
+  column-gap: 30px;
+  color: rgb(100, 100, 100);
+}
+
+.backup-info-container .tota_unit__lab {
+  grid-column: 1 / 2;
+  grid-row: 1/ 2;
+}
+
+.backup-info-container .total_progress__lab {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+.backup-info-container .every_day_to_do_unit__lab {
+  grid-column: 1 / 2;
+  grid-row: 3 / 4;
+}
+
+.choose-plan__sec button {
+  display: block;
+  height: 40px;
+  width: 70px;
+  margin: 30px auto 0 auto;
+  padding: 5px;
+  border: 1px solid #444;
+  border-radius: 7px;
+  background-color: #fff;
+  box-shadow: 0 1px 7px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+.choose-plan__sec button:hover {
+  background-color: #a2dad4;
+  border: 1px solid #227c73;
+}
+
+.choose-plan__sec button:active {
+  background-color: #227c73;
+  color: #fff;
+}
