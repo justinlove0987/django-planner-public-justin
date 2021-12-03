@@ -119,6 +119,7 @@ def schedule(request):
     group_items = {}
     learning_name_in_group = []
     learning_names = []
+    groups = {}
 
     for learning_item in learning_items:
         if learning_item.group != None:
@@ -127,10 +128,17 @@ def schedule(request):
             
             learning_name_in_group.append(learning_item.learning_name)
 
-            if group_order in group_items:
-                group_items[group_order][group_name].append(learning_item.learning_name)
+            if group_order in groups:
+                # group_items[group_order][group_name].append(learning_item.learning_name)
+                groups[group_order]["group_task_lst"].append(learning_item.learning_name)
+                
             else:
-                group_items[group_order] = {group_name: [learning_item.learning_name]}
+                groups[group_order] = {"group_name": group_name, "group_task_lst":[learning_item.learning_name]}
+                # group_items[group_order] = {group_name: [learning_item.learning_name]}
+    
+
+    # groups sample
+    # [ { 0: {"group_name": "group_name", "group_task_lst":["a","b","c"]} }]
     
 
     for learning in learning_items:
@@ -141,7 +149,8 @@ def schedule(request):
     context = {
         "learning_items": learning_items,
         "group_items": group_items,
-        "learning_names": learning_names
+        "learning_names": learning_names,
+        "groups": groups
     }
 
     return render(request, "learning/schedule.html", context)
